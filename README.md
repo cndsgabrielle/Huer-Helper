@@ -10,4 +10,4 @@ Huer Helper is an Android application built to assist individuals with color bli
 
 * **Language**: Kotlin
 * **UI**: XML Layouts with Material Design
-* **Database**: Local storage for bookmarked colors
+* **Database**: Firebase
