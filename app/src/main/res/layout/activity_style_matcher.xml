@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/home_background"
+    android:fitsSystemWindows="false">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="130dp"> <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="65dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/glass_button_bg"
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="Back" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="72dp"
+            android:text="Style Matcher"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:includeFontPadding="false" /> </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#151B33"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/viewFinder1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="First Item"
+            android:background="@drawable/glass_button_bg"
+            android:padding="8dp"
+            android:textColor="#FFFFFF"
+            android:layout_margin="16dp" />
+
+        <Button
+            android:id="@+id/btn_capture_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capture First Item"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#4A90E2" />
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#40FFFFFF"
+        android:layout_marginHorizontal="24dp"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#151B33"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/viewFinder2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Second Item"
+            android:background="@drawable/glass_button_bg"
+            android:padding="8dp"
+            android:textColor="#FFFFFF"
+            android:layout_margin="16dp" />
+
+        <Button
+            android:id="@+id/btn_capture_second"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capture Second Item"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#4A90E2" />
+    </FrameLayout>
+</LinearLayout>
