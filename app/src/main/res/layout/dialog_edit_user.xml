@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/glass_card_dark"
+    android:padding="28dp"
+    android:layout_marginHorizontal="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit User"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textColor="#B3FFFFFF"
+        android:textSize="13sp"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/et_edit_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#66FFFFFF"
+        android:hint="Username"
+        android:backgroundTint="#66FFFFFF"
+        android:paddingVertical="8dp"
+        android:layout_marginBottom="20dp"
+        android:inputType="text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textColor="#B3FFFFFF"
+        android:textSize="13sp"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/et_edit_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#66FFFFFF"
+        android:hint="Email"
+        android:backgroundTint="#66FFFFFF"
+        android:paddingVertical="8dp"
+        android:layout_marginBottom="28dp"
+        android:inputType="textEmailAddress" />
+
+    <!-- Buttons row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/btn_dialog_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:textColor="#AA82FF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/btn_dialog_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SAVE"
+            android:textColor="#AA82FF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -53,9 +53,7 @@
             android:layout_height="28dp"
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_sparkle"
-
             app:tint="#22D3EE"
-
             android:elevation="4dp" />
     </LinearLayout>
 
@@ -82,6 +80,7 @@
         app:layout_constraintTop_toBottomOf="@id/subtitle"
         tools:layout_editor_absoluteX="32dp">
 
+        <!-- Username -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -97,11 +96,12 @@
             android:layout_height="54dp"
             android:background="@drawable/edit_text_bg"
             android:hint="Enter your username"
-            android:inputType="textEmailAddress"
+            android:inputType="text"
             android:paddingStart="16dp"
             android:textColor="#FFFFFF"
             android:textColorHint="#CCFFFFFF" />
 
+        <!-- Password -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -112,17 +112,36 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/et_password"
+        <!-- Password field wrapped in FrameLayout for eye icon -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/edit_text_bg"
-            android:hint="Enter your password"
-            android:inputType="textPassword"
-            android:paddingStart="16dp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#CCFFFFFF" />
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:background="@drawable/edit_text_bg"
+                android:hint="Enter your password"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="52dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#CCFFFFFF" />
+
+            <ImageView
+                android:id="@+id/iv_eye_password"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="14dp"
+                android:src="@drawable/ic_eye"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="#CCFFFFFF" />
+
+        </FrameLayout>
 
         <Button
             android:id="@+id/btn_signin"
@@ -147,6 +166,7 @@
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

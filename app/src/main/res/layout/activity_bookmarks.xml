@@ -53,15 +53,18 @@
                     app:tint="#FFFFFF" />
             </LinearLayout>
 
+            <!-- Dynamic count updated by Kotlin -->
             <TextView
+                android:id="@+id/tv_bookmark_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2 saved colors"
+                android:text="Loading..."
                 android:textColor="#B3FFFFFF"
                 android:textSize="16sp" />
         </LinearLayout>
     </RelativeLayout>
 
+    <!-- Filter tabs — IDs added so Kotlin can toggle them -->
     <LinearLayout
         android:id="@+id/filter_container"
         android:layout_width="match_parent"
@@ -72,35 +75,38 @@
         app:layout_constraintTop_toBottomOf="@id/header_container">
 
         <TextView
+            android:id="@+id/btn_filter_all"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:background="@drawable/card_gradient_blue"
             android:gravity="center"
-            android:text="All (2)"
+            android:text="All"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/btn_filter_scanned"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1.2"
             android:layout_marginHorizontal="8dp"
             android:background="@drawable/glass_button_bg"
             android:gravity="center"
-            android:text="Scanned (1)"
+            android:text="Scanned"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/btn_filter_matched"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1.2"
             android:layout_marginStart="8dp"
             android:background="@drawable/glass_button_bg"
             android:gravity="center"
-            android:text="Matched (1)"
+            android:text="Matched"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
     </LinearLayout>
@@ -112,186 +118,40 @@
         android:background="@drawable/divider_gradient"
         app:layout_constraintTop_toBottomOf="@id/filter_container" />
 
-    <ScrollView
+    <!-- Loading indicator -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Empty state -->
+    <TextView
+        android:id="@+id/tv_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No bookmarks yet.\nStart scanning or matching colors!"
+        android:textColor="#80FFFFFF"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- The actual list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_bookmarks"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:padding="24dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/divider"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/glass_card_bg"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <View
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:background="#F5F5DC" />
-                    <View
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_marginStart="8dp"
-                        android:background="#166534" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/btn_gradient_purple"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp"
-                        android:text="Matched"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Beige + Green"
-                        android:textColor="#FFFFFF"
-                        android:textStyle="bold"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Beige (#F5F5DC)\n+ Green (#166534)"
-                        android:textColor="#B3FFFFFF"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Feb 6, 2026"
-                        android:textColor="#80FFFFFF"
-                        android:textSize="11sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <ImageButton
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/card_gradient_blue"
-                        android:src="@drawable/ic_edit"
-                        android:scaleType="fitCenter"
-                        android:padding="12dp"
-                        app:tint="#FFFFFF"/>
-                    <ImageButton
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/btn_gradient_pink"
-                        android:src="@drawable/ic_delete"
-                        android:scaleType="fitCenter"
-                        android:padding="12dp"
-                        app:tint="#FFFFFF"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/glass_card_bg"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <View
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:background="#7851A9" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/card_gradient_blue"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp"
-                        android:text="Scanned"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Royal Purple"
-                        android:textColor="#FFFFFF"
-                        android:textStyle="bold"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="#7851A9"
-                        android:textColor="#B3FFFFFF"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Feb 5, 2026"
-                        android:textColor="#80FFFFFF"
-                        android:textSize="11sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <ImageButton
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/card_gradient_blue"
-                        android:src="@drawable/ic_edit"
-                        android:scaleType="fitCenter"
-                        android:padding="12dp"
-                        app:tint="#FFFFFF"/>
-                    <ImageButton
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/btn_gradient_pink"
-                        android:src="@drawable/ic_delete"
-                        android:scaleType="fitCenter"
-                        android:padding="12dp"
-                        app:tint="#FFFFFF"/>
-                </LinearLayout>
-            </LinearLayout>
-
-        </LinearLayout>
-    </ScrollView>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

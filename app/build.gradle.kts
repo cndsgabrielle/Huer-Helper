@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -51,4 +52,10 @@ dependencies {
     implementation("androidx.camera:camera-camera2:${camerax_version}")
     implementation("androidx.camera:camera-lifecycle:${camerax_version}")
     implementation("androidx.camera:camera-view:${camerax_version}")
+    // Import the Firebase BoM (Bill of Materials)
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")     // For Login/Sign-up
+    implementation("com.google.firebase:firebase-firestore-ktx") // For saving Color Bookmarks
+    implementation("com.google.firebase:firebase-analytics-ktx") // General Firebase support
+    implementation("com.google.code.gson:gson:2.10.1")
 }

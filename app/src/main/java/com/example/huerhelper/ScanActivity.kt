@@ -4,173 +4,215 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import androidx.appcompat.app.AppCompatActivity
 import java.util.Locale
-import android.content.Intent
+import java.util.concurrent.Executors
+import android.graphics.Color
+import android.graphics.Typeface
+import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.camera.core.CameraControl
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import com.google.android.material.snackbar.Snackbar
 
 class ScanActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
-    // Class-level variables for access across all functions
     private lateinit var tts: TextToSpeech
     private var isFrozen = false
+    private var isSimpleMode = true
     private var cameraControl: CameraControl? = null
 
-    private fun allPermissionsGranted() = arrayOf(android.Manifest.permission.CAMERA).all {
-        ContextCompat.checkSelfPermission(baseContext, it) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    private val cameraExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
+
+    private var currentHex = ""
+    private var currentColorName = ""
+
+    private lateinit var rootView: View
+
+    companion object {
+        private const val REQUEST_CODE_CAMERA = 10
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
 
-        // Initialize Text-to-Speech and Camera
+        rootView = findViewById(android.R.id.content)
+
+        cameraExecutor.execute { ColorNameFinder.init(this) }
         tts = TextToSpeech(this, this)
-        startCamera()
 
-        // --- UI Click Listeners ---
+        if (allPermissionsGranted()) startCamera()
+        else requestPermissions(arrayOf(android.Manifest.permission.CAMERA), REQUEST_CODE_CAMERA)
 
-        // Back Button
+        // ── Back ──────────────────────────────────────────────────────────────
         findViewById<ImageButton>(R.id.btn_back).setOnClickListener { finish() }
 
-        // Speak Button: Announces the identified color
+        // ── Speak ─────────────────────────────────────────────────────────────
         findViewById<ImageButton>(R.id.btn_speak).setOnClickListener {
-            val colorName = findViewById<TextView>(R.id.txt_color_name).text.toString()
-            if (colorName.isNotEmpty()) {
-                tts.speak(colorName, TextToSpeech.QUEUE_FLUSH, null, null)
+            if (currentColorName.isNotEmpty() && currentColorName != "Scanning...") {
+                tts.speak(currentColorName, TextToSpeech.QUEUE_FLUSH, null, null)
             }
         }
 
-        // Save Button: Bookmark the current color
-        findViewById<ImageButton>(R.id.btn_save).setOnClickListener {
-            Toast.makeText(this, "Color saved to Bookmarks!", Toast.LENGTH_SHORT).show()
-        }
-
-        // Zoom Controls: Links to the camera lens
-        findViewById<ImageButton>(R.id.btn_zoom_in).setOnClickListener {
-            cameraControl?.setLinearZoom(0.5f) // Zoom to 50%
-            findViewById<TextView>(R.id.txt_zoom_level).text = "2x"
-        }
-
-        findViewById<ImageButton>(R.id.btn_zoom_out).setOnClickListener {
-            cameraControl?.setLinearZoom(0.0f) // Reset to 1x
-            findViewById<TextView>(R.id.txt_zoom_level).text = "1x"
-        }
-
-        // Freeze Button: Pauses the live updates on screen
+        // ── Freeze ────────────────────────────────────────────────────────────
         findViewById<ImageButton>(R.id.btn_freeze).setOnClickListener {
             isFrozen = !isFrozen
-            val status = if (isFrozen) "Paused" else "Live"
-            Toast.makeText(this, "Detection $status", Toast.LENGTH_SHORT).show()
+            (it as ImageButton).imageAlpha = if (isFrozen) 128 else 255
+            showSnackbar(if (isFrozen) "Paused" else "Live")
         }
-        // Inside onCreate, before startCamera()
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            requestPermissions(arrayOf(android.Manifest.permission.CAMERA), 10)
+
+        // ── Mode Toggle ───────────────────────────────────────────────────────
+        val btnModeToggle = findViewById<TextView>(R.id.btn_mode_toggle)
+        btnModeToggle.setOnClickListener {
+            isSimpleMode = !isSimpleMode
+            if (isSimpleMode) {
+                btnModeToggle.text = "Detailed"
+                showSnackbar("Simple Mode — basic color names")
+            } else {
+                btnModeToggle.text = "Simple"
+                showSnackbar("Detailed Mode — precise color names")
+            }
+        }
+
+        // ── Bookmark ──────────────────────────────────────────────────────────
+        findViewById<ImageButton>(R.id.btn_save).setOnClickListener {
+            if (currentHex.isEmpty() || currentColorName.isEmpty() || currentColorName == "Scanning...") {
+                showSnackbar("Point at a color first!")
+                return@setOnClickListener
+            }
+            val dialog = BookmarkDialog.newInstance(
+                hex1       = currentHex,
+                colorName1 = currentColorName
+            )
+            dialog.onSaved = {
+                showSnackbar("Saved to bookmarks!")
+            }
+            dialog.show(supportFragmentManager, "bookmark")
+        }
+
+        // ── Zoom ──────────────────────────────────────────────────────────────
+        findViewById<ImageButton>(R.id.btn_zoom_in).setOnClickListener {
+            cameraControl?.setLinearZoom(0.5f)
+            findViewById<TextView>(R.id.txt_zoom_level).text = "2x"
+        }
+        findViewById<ImageButton>(R.id.btn_zoom_out).setOnClickListener {
+            cameraControl?.setLinearZoom(0.0f)
+            findViewById<TextView>(R.id.txt_zoom_level).text = "1x"
         }
     }
 
-    override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) tts.language = Locale.US
+    // ── Custom Snackbar ───────────────────────────────────────────────────────
+
+    private fun showSnackbar(message: String) {
+        val snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT)
+        val snackbarView = snackbar.view
+        snackbarView.setBackgroundResource(R.drawable.glass_card_dark)
+
+        val tvMessage = snackbarView.findViewById<TextView>(
+            com.google.android.material.R.id.snackbar_text
+        )
+        tvMessage.setTextColor(Color.WHITE)
+        tvMessage.textSize = 14f
+        tvMessage.typeface = Typeface.DEFAULT_BOLD
+
+        snackbar.show()
     }
+
+    // ── Camera ────────────────────────────────────────────────────────────────
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            val cameraProvider = cameraProviderFuture.get()
 
-            // 1. Preview Setup
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(findViewById<PreviewView>(R.id.viewFinder).surfaceProvider)
-                }
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(findViewById<PreviewView>(R.id.viewFinder).surfaceProvider)
+            }
 
-            // 2. Image Analyzer Setup (RGBA_8888 for easy color reading)
             val imageAnalyzer = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .build()
 
-            imageAnalyzer.setAnalyzer(ContextCompat.getMainExecutor(this)) { imageProxy ->
+            imageAnalyzer.setAnalyzer(cameraExecutor) { imageProxy ->
                 if (!isFrozen) {
-                    val plane = imageProxy.planes[0]
-                    val buffer = plane.buffer
-
-                    // Find the center pixel coordinates
-                    val centerX = imageProxy.width / 2
+                    val plane   = imageProxy.planes[0]
+                    val buffer  = plane.buffer
+                    val centerX = imageProxy.width  / 2
                     val centerY = imageProxy.height / 2
 
-                    // Calculate memory position
-                    val pixelPos = (centerY * plane.rowStride) + (centerX * plane.pixelStride)
+                    var totalR = 0L; var totalG = 0L; var totalB = 0L
+                    var count  = 0
+                    val sampleSize = 25
 
-                    // Extract RGB values
-                    val r = buffer.get(pixelPos).toInt() and 0xFF
-                    val g = buffer.get(pixelPos + 1).toInt() and 0xFF
-                    val b = buffer.get(pixelPos + 2).toInt() and 0xFF
+                    for (dy in -sampleSize..sampleSize) {
+                        for (dx in -sampleSize..sampleSize) {
+                            val pos = ((centerY + dy) * plane.rowStride) + ((centerX + dx) * plane.pixelStride)
+                            if (pos + 2 < buffer.capacity()) {
+                                totalR += buffer.get(pos).toLong()     and 0xFF
+                                totalG += buffer.get(pos + 1).toLong() and 0xFF
+                                totalB += buffer.get(pos + 2).toLong() and 0xFF
+                                count++
+                            }
+                        }
+                    }
 
-                    val hex = String.format("#%02X%02X%02X", r, g, b)
-                    val colorName = getBasicColorName(r, g, b)
+                    if (count > 0) {
+                        val r = (totalR / count).toInt()
+                        val g = (totalG / count).toInt()
+                        val b = (totalB / count).toInt()
 
-                    // Update UI
-                    runOnUiThread {
-                        findViewById<TextView>(R.id.txt_color_name).text = colorName
-                        findViewById<TextView>(R.id.txt_color_details).text = "$hex • RGB($r, $g, $b)"
+                        val hex = String.format("#%02X%02X%02X", r, g, b)
+
+                        val colorName = if (isSimpleMode)
+                            ColorNameFinder.getSimpleColorName(r, g, b)
+                        else
+                            ColorNameFinder.getColorName(r, g, b)
+
+                        currentHex       = hex
+                        currentColorName = colorName
+
+                        runOnUiThread {
+                            findViewById<TextView>(R.id.txt_color_name).text    = colorName
+                            findViewById<TextView>(R.id.txt_color_details).text = "$hex • RGB($r, $g, $b)"
+                            findViewById<ImageView>(R.id.center_crosshair).setColorFilter(Color.rgb(r, g, b))
+                        }
                     }
                 }
-                imageProxy.close() // Release frame
+                imageProxy.close()
             }
-
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 cameraProvider.unbindAll()
-                // Bind BOTH preview and analyzer at once
-                val camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
-
-                // Save the control object to our class variable
+                val camera = cameraProvider.bindToLifecycle(
+                    this,
+                    CameraSelector.DEFAULT_BACK_CAMERA,
+                    preview,
+                    imageAnalyzer
+                )
                 cameraControl = camera.cameraControl
-            } catch(exc: Exception) {
-                Toast.makeText(this, "Error starting camera", Toast.LENGTH_SHORT).show()
+            } catch (exc: Exception) {
+                showSnackbar("Camera failed to start: ${exc.message}")
             }
 
         }, ContextCompat.getMainExecutor(this))
     }
 
-    private fun getBasicColorName(r: Int, g: Int, b: Int): String {
-        val basicColors = mapOf(
-            "Red" to Triple(255, 0, 0),
-            "Green" to Triple(0, 255, 0),
-            "Blue" to Triple(0, 0, 255),
-            "White" to Triple(255, 255, 255),
-            "Black" to Triple(0, 0, 0),
-            "Yellow" to Triple(255, 255, 0),
-            "Sky Blue" to Triple(135, 206, 235)
-        )
+    private fun allPermissionsGranted() =
+        ContextCompat.checkSelfPermission(
+            this, android.Manifest.permission.CAMERA
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
-        return basicColors.minByOrNull { (_, rgb) ->
-            val dr = r - rgb.first
-            val dg = g - rgb.second
-            val db = b - rgb.third
-            dr * dr + dg * dg + db * db
-        }?.key ?: "Unknown"
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) tts.language = Locale.US
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        tts.stop()
         tts.shutdown()
+        cameraExecutor.shutdown()
     }
 }

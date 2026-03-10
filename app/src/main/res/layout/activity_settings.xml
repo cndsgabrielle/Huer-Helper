@@ -118,7 +118,8 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/glass_button_bg"
             android:paddingHorizontal="16dp"
-            android:text="bcandesse080505@gmail.com"
+            android:hint="Email Address"
+            android:textColorHint="#80FFFFFF"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:enabled="false" />
@@ -139,7 +140,8 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/glass_button_bg"
             android:paddingHorizontal="16dp"
-            android:text="bcandesse080505"
+            android:hint="Username"
+            android:textColorHint="#80FFFFFF"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:enabled="false" />
@@ -178,6 +180,8 @@
                     android:layout_gravity="end|center_vertical"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_eye"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:tint="#B3FFFFFF" />
             </FrameLayout>
         </LinearLayout>
@@ -224,7 +228,9 @@
                     android:background="@android:color/transparent"
                     android:paddingHorizontal="16dp"
                     android:inputType="textPassword"
-                    android:text="password123"
+                    android:text=""
+                    android:hint="Enter new password"
+                    android:textColorHint="#80FFFFFF"
                     android:textColor="#FFFFFF"
                     android:textSize="14sp" />
                 <ImageView
@@ -234,6 +240,8 @@
                     android:layout_gravity="end|center_vertical"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_eye"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:tint="#B3FFFFFF" />
             </FrameLayout>
 
@@ -258,7 +266,9 @@
                     android:background="@android:color/transparent"
                     android:paddingHorizontal="16dp"
                     android:inputType="textPassword"
-                    android:text="password123"
+                    android:text=""
+                    android:hint="Confirm new password"
+                    android:textColorHint="#80FFFFFF"
                     android:textColor="#FFFFFF"
                     android:textSize="14sp" />
                 <ImageView
@@ -268,6 +278,8 @@
                     android:layout_gravity="end|center_vertical"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_eye"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:tint="#B3FFFFFF" />
             </FrameLayout>
 

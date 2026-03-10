@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "58580623122",
+    "project_id": "huerhelper",
+    "storage_bucket": "huerhelper.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58580623122:android:9fc466a2de87eed4e91dcb",
+        "android_client_info": {
+          "package_name": "com.example.huerhelper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTnfbBRhc7PYT5Obgv4uUkeuwoRMOiLiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
