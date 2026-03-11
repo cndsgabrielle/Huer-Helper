@@ -99,9 +99,10 @@ object ColorNameFinder {
             }
 
             h in 45f..65f -> when {
-                l < 0.45f -> "Brown"
-                l > 0.80f -> "Cream"
-                else      -> "Yellow"
+                l < 0.35f               -> "Brown"
+                l < 0.55f && s < 0.50f -> "Brown"
+                l > 0.80f               -> "Cream"
+                else                    -> "Yellow"
             }
 
             h in 65f..90f -> "Green"

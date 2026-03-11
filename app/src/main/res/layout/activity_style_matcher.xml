@@ -38,7 +38,7 @@
             android:includeFontPadding="false" />
     </RelativeLayout>
 
-    <!-- ── Slot 1 ── -->
+    <!-- Slot 1 -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -48,14 +48,12 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp">
 
-        <!-- Live camera (slot 1) -->
         <androidx.camera.view.PreviewView
             android:id="@+id/viewFinder1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible" />
 
-        <!-- Frozen photo shown after slot 1 is captured -->
         <ImageView
             android:id="@+id/snapshot1"
             android:layout_width="match_parent"
@@ -63,7 +61,6 @@
             android:scaleType="centerCrop"
             android:visibility="gone" />
 
-        <!-- Label shown when slot 1 is captured -->
         <TextView
             android:id="@+id/slot1_captured_label"
             android:layout_width="wrap_content"
@@ -77,7 +74,6 @@
             android:layout_marginBottom="16dp"
             android:visibility="gone" />
 
-        <!-- "First Item" label top-left -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -87,14 +83,31 @@
             android:textColor="#FFFFFF"
             android:layout_margin="16dp" />
 
-        <Button
-            android:id="@+id/btn_capture_first"
+        <LinearLayout
+            android:id="@+id/btn_group_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Capture First Item"
+            android:orientation="horizontal"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="#4A90E2" />
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_capture_first"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Camera"
+                android:backgroundTint="#4A90E2"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btn_gallery_first"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery"
+                android:backgroundTint="#7B52AB" />
+
+        </LinearLayout>
     </FrameLayout>
 
     <View
@@ -103,7 +116,7 @@
         android:background="#40FFFFFF"
         android:layout_marginHorizontal="24dp"/>
 
-    <!-- ── Slot 2 ── -->
+    <!-- Slot 2 -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -113,14 +126,19 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="12dp">
 
-        <!-- Live camera (slot 2) — hidden until slot 1 is captured -->
         <androidx.camera.view.PreviewView
             android:id="@+id/viewFinder2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone" />
 
-        <!-- Placeholder shown before slot 1 is captured -->
+        <ImageView
+            android:id="@+id/snapshot2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
         <View
             android:id="@+id/slot2_color_fill"
             android:layout_width="match_parent"
@@ -128,7 +146,6 @@
             android:background="#30FFFFFF"
             android:visibility="visible" />
 
-        <!-- Placeholder label -->
         <TextView
             android:id="@+id/slot2_captured_label"
             android:layout_width="wrap_content"
@@ -139,7 +156,6 @@
             android:layout_gravity="center"
             android:visibility="visible" />
 
-        <!-- "Second Item" label top-left -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -149,14 +165,32 @@
             android:textColor="#FFFFFF"
             android:layout_margin="16dp" />
 
-        <Button
-            android:id="@+id/btn_capture_second"
+        <LinearLayout
+            android:id="@+id/btn_group_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Capture Second Item"
+            android:orientation="horizontal"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="#4A90E2" />
+            android:gravity="center"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btn_capture_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Camera"
+                android:backgroundTint="#4A90E2"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btn_gallery_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery"
+                android:backgroundTint="#7B52AB" />
+
+        </LinearLayout>
     </FrameLayout>
 
 </LinearLayout>
