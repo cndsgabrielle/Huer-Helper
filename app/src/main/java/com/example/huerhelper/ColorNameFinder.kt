@@ -43,9 +43,28 @@ object ColorNameFinder {
         val dataset = colorDataset ?: return "Loading..."
         if (dataset.isEmpty()) return "Dataset Error"
         val (inputL, inputA, inputB) = rgbToLab(r, g, b)
-        return dataset.minByOrNull { color ->
+        val best = dataset.minByOrNull { color ->
             deltaE(inputL, inputA, inputB, color.L, color.a, color.b)
         }?.name ?: "Unknown"
+
+        val rDiff = maxOf(r, g, b) - minOf(r, g, b)
+        val isWarmDominant = r > b && r > g        // red channel strongest = warm tone
+        val hasWarmHue = r > (b + 10) && r >= g   // red noticeably above blue = brownish
+
+        // Gray in dim light → could be White
+        if (best == "Gray") {
+            if (rDiff <= 15 && inputL > 45.0) return "White"
+            // Gray but warm-toned → Light Brown or Beige
+            if (hasWarmHue && inputL in 35.0..60.0) return "Light Brown"
+        }
+
+        // Black but has warm hue → Dark Brown
+        if (best == "Black" && hasWarmHue && inputL > 8.0) return "Dark Brown"
+
+        // Dark Gray but warm → Brown
+        if (best == "Dark Gray" && hasWarmHue) return "Brown"
+
+        return best
     }
 
     // ─── Simple Mode — HSL range matching ────────────────────────────────────
@@ -72,11 +91,15 @@ object ColorNameFinder {
         val h = if (hRaw < 0) hRaw + 360f else hRaw
 
         // ── Achromatic: Black / Gray / White ──────────────────────────────────
+        // But first: low-saturation warm hues (browns/tans) should not be called Gray
         if (s < 0.20f) {
+            val isWarmHue = h in 15f..55f
             return when {
-                l < 0.25f -> "Black"
-                l < 0.55f -> "Gray"
-                else      -> "White"
+                l < 0.25f            -> "Black"
+                isWarmHue && l < 0.45f -> "Brown"
+                isWarmHue            -> "Beige"
+                l < 0.55f            -> "Gray"
+                else                 -> "White"
             }
         }
 
@@ -86,7 +109,7 @@ object ColorNameFinder {
 
         // ── Chromatic colors ──────────────────────────────────────────────────
         return when {
-            h < 10f || h >= 345f -> "Red"
+            h < 10f || h >= 345f -> if (l < 0.30f) "Brown" else "Red"
 
             h in 10f..20f -> when {
                 l < 0.40f -> "Brown"
@@ -100,7 +123,7 @@ object ColorNameFinder {
 
             h in 45f..65f -> when {
                 l < 0.35f               -> "Brown"
-                l < 0.55f && s < 0.50f -> "Brown"
+                l < 0.45f && s < 0.35f -> "Brown"
                 l > 0.80f               -> "Cream"
                 else                    -> "Yellow"
             }
