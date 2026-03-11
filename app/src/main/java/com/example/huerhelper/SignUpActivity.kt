@@ -11,13 +11,14 @@ import android.text.method.PasswordTransformationMethod
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
+import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,13 +29,16 @@ class SignUpActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private lateinit var rootView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
 
         auth = Firebase.auth
-        db = Firebase.firestore
+        db   = Firebase.firestore
+
+        rootView = findViewById(android.R.id.content)
 
         // Sparkle animation
         val signupSparkle = findViewById<ImageView>(R.id.signup_sparkle)
@@ -87,17 +91,17 @@ class SignUpActivity : AppCompatActivity() {
             val confirmPassword = etConfirmPassword.text.toString().trim()
 
             if (email.isEmpty() || username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                showSnackbar("Please fill in all fields")
                 return@setOnClickListener
             }
 
             if (password != confirmPassword) {
-                Toast.makeText(this, "Passwords do not match!", Toast.LENGTH_SHORT).show()
+                showSnackbar("Passwords do not match!")
                 return@setOnClickListener
             }
 
             if (password.length < 6) {
-                Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
+                showSnackbar("Password must be at least 6 characters")
                 return@setOnClickListener
             }
 
@@ -107,11 +111,11 @@ class SignUpActivity : AppCompatActivity() {
                         val userId = auth.currentUser?.uid
 
                         val userProfile = hashMapOf(
-                            "username" to username,
-                            "email"    to email,
-                            "uid"      to userId,
-                            "status"   to "active",
-                            "role"     to "user",
+                            "username"  to username,
+                            "email"     to email,
+                            "uid"       to userId,
+                            "status"    to "active",
+                            "role"      to "user",
                             "createdAt" to System.currentTimeMillis()
                         )
 
@@ -119,22 +123,61 @@ class SignUpActivity : AppCompatActivity() {
                             db.collection("Users").document(userId)
                                 .set(userProfile)
                                 .addOnSuccessListener {
-                                    Toast.makeText(this, "Welcome, $username!", Toast.LENGTH_SHORT).show()
-                                    startActivity(Intent(this, MainActivity::class.java))
-                                    finish()
+                                    navigateWithMessage("Welcome, $username!", MainActivity::class.java)
                                 }
                                 .addOnFailureListener { e ->
-                                    Toast.makeText(this, "Database Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    showSnackbar("Database Error: ${e.message}")
                                 }
                         }
                     } else {
-                        Toast.makeText(this, "Authentication Failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                        showSnackbar("Sign up failed: ${task.exception?.message}")
                     }
                 }
         }
 
         setupSignInLink()
     }
+
+    // ── Custom Snackbar ───────────────────────────────────────────────────────
+
+    private fun showSnackbar(message: String) {
+        val snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_LONG)
+        val snackbarView = snackbar.view
+        snackbarView.setBackgroundResource(R.drawable.glass_card_dark)
+
+        val tvMessage = snackbarView.findViewById<TextView>(
+            com.google.android.material.R.id.snackbar_text
+        )
+        tvMessage.setTextColor(Color.WHITE)
+        tvMessage.textSize = 14f
+        tvMessage.typeface = Typeface.DEFAULT_BOLD
+
+        snackbar.show()
+    }
+
+    // ── Navigate with message ─────────────────────────────────────────────────
+
+    private fun navigateWithMessage(message: String, destination: Class<*>) {
+        val snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_LONG)
+        val snackbarView = snackbar.view
+        snackbarView.setBackgroundResource(R.drawable.glass_card_dark)
+
+        val tvMessage = snackbarView.findViewById<TextView>(
+            com.google.android.material.R.id.snackbar_text
+        )
+        tvMessage.setTextColor(Color.WHITE)
+        tvMessage.textSize = 14f
+        tvMessage.typeface = Typeface.DEFAULT_BOLD
+
+        snackbar.show()
+
+        rootView.postDelayed({
+            startActivity(Intent(this, destination))
+            finish()
+        }, 1500)
+    }
+
+    // ── Sign In Link ──────────────────────────────────────────────────────────
 
     private fun setupSignInLink() {
         val signInTextView = findViewById<TextView>(R.id.login_link)
